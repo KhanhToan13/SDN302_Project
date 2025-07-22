@@ -19,12 +19,6 @@ const productSchema = new mongoose.Schema({
         type: String,
         default: '/images/default.jpg'
     },
-    stockQuantity: {
-        type: Number,
-        required: [true, 'Số lượng tồn kho là bắt buộc'],
-        min: 0,
-        default: 0
-    }
 }, {
     timestamps: true
 });

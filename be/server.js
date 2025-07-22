@@ -1,41 +1,25 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const connectDB = require('./config/db.js');
-const mainRouter = require('./routes/index.js'); //
+const connectDB = require('./config/db');
+const mainRouter = require('./routes/index');
 
-// Load biến môi trường từ file .env
 dotenv.config();
-
 const app = express();
+connectDB();
 
-// === Middlewares ===
-// Cho phép các yêu cầu từ domain khác
-app.use(cors());
-// Middleware để đọc và xử lý request body dạng JSON
+// Chỉ cần CORS cơ bản và body-parser
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true
+}));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-
-// === Routes ===
-// Route gốc để kiểm tra server có hoạt động không
-app.get('/', (req, res) => {
-    res.json({ message: 'Welcome to Project API' });
-});
-
-// Sử dụng router chính cho tất cả các route có tiền tố /api
+// Dùng router chính
 app.use('/api', mainRouter);
 
-
-// === Khởi động Server ===
 const PORT = process.env.PORT || 9999;
-
-app.listen(PORT, async () => {
-    try {
-        // Kết nối tới Database trước khi server sẵn sàng nhận request
-        await connectDB();
-        console.log(`Server is running on http://localhost:${PORT}`);
-    } catch (error) {
-        console.error(`Error connecting to DB or starting server: ${error.message}`);
-        process.exit(1); // Thoát ứng dụng nếu có lỗi nghiêm trọng
-    }
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
